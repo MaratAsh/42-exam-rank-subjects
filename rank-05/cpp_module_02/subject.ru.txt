@@ -1,0 +1,82 @@
+Название задания  : cpp_module_02
+Ожидаемые файлы   : Warlock.cpp Warlock.hpp
+                   ASpell.hpp ASpell.cpp
+				   ATarget.hpp ATarget.cpp
+				   Fwoosh.hpp Fwoosh.cpp
+				   Dummy.hpp Dummy.cpp
+				   Fireball.hpp Fireball.cpp
+				   Polymorph.hpp Polymorph.cpp
+				   BrickWall.hpp BrickWall.cpp
+				   SpellBook.hpp SpellBook.cpp
+				   TargetGenerator.hpp TargetGenerator.cpp
+--------------------------------------------------------------------------------
+
+В классах Warlock, SpellBook и TargetGenerator оператор switch ЗАПРЕЩЕН,
+и его использование приведет к оценке -42.
+
+Создайте следующие два заклинания на той же модели, что и Fwoosh:
+
+* Fireball (Name: "Fireball", Effects: "burnt to a crisp")
+* Polymorph (Name: "Polymorph", Effects: "turned into a critter")
+
+Вдобавок к этому, просто чтобы у него не было только манекена для атаки,
+давайте создадим для него новую цель, которой будет Кирпичная Стена (Тип: "Inconspicuous Red-brick Wall").
+
+Теперь создайте класс SpellBook в канонической форме, который нельзя скопировать
+или создать путем копирования. Он будет иметь следующие функции:
+
+* void learnSpell(ASpell*), который КОПИРУЕТ заклинание в книге
+* void forgetSpell(string const &), который удаляет заклинание из книги,
+        за исключением случаев, когда его там нет.
+* ASpell* createSpell(string const &), который получает строку,
+        соответствующую имени заклинания, создает ее и возвращает.
+
+Измените Warlock, сделайте так, чтобы у него была книга заклинаний,
+которая будет создаваться вместе с ним и уничтожаться вместе с ним.
+Также сделайте так, чтобы его функции learnSpell и forgetSpell вызывали функции книги заклинаний.
+
+Функция launchSpell должна будет использовать SpellBook для создания заклинания,
+которое она пытается запустить.
+
+Создайте класс TargetGenerator в канонической форме и, как и прежде, не копируемый.
+
+Он будет иметь следующие функции:
+
+* void learnTargetType(ATarget*), обучает цель генератору
+
+* void forgetTargetType(string const &), это заставляет генератор забыть целевой тип, если он известен
+
+* ATarget* createTarget(string const &), который создает цель указанного типа
+
+Фух, сделано. Теперь вот тестовый файл main. Он проверяет не все, поэтому обязательно используйте свой собственный.
+
+int main()
+{
+  Warlock richard("Richard", "foo");
+  richard.setTitle("Hello, I'm Richard the Warlock!");
+  BrickWall model1;
+
+  Polymorph* polymorph = new Polymorph();
+  TargetGenerator tarGen;
+
+  tarGen.learnTargetType(&model1);
+  richard.learnSpell(polymorph);
+
+  Fireball* fireball = new Fireball();
+
+  richard.learnSpell(fireball);
+
+  ATarget* wall = tarGen.createTarget("Inconspicuous Red-brick Wall");
+
+  richard.introduce();
+  richard.launchSpell("Polymorph", *wall);
+  richard.launchSpell("Fireball", *wall);
+}
+
+~$ ./a.out | cat -e
+Richard: This looks like another boring day.$
+Richard: I am Richard, Hello, I'm Richard the Warlock!!$
+Inconspicuous Red-brick Wall has been turned into a critter!$
+Inconspicuous Red-brick Wall has been burnt to a crisp!$
+Richard: My job here is done!$
+~$
